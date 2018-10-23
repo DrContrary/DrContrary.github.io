@@ -2,7 +2,7 @@
 layout: post
 title:  "Welcome R"
 date:   2018-10-23 12:37:39 -0400
-categories: jekyll update
+categories: information
 ---
 Installation of R
 

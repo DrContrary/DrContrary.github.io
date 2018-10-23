@@ -4,3 +4,5 @@
 
 layout: home
 ---
+
+<h1> R Users Group </h1>
