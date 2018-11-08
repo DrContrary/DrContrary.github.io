@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1541696632571.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "892771541",
+    "id" : "4F78E762",
+    "lastKnownWriteTime" : 1541103552,
+    "last_content_update" : 1541103552,
+    "path" : "C:/Users/Alyssa/R_users/_posts/2018-11-01-Welcome_to_the_tidyverse.Rmd",
+    "project_path" : "_posts/2018-11-01-Welcome_to_the_tidyverse.Rmd",
+    "properties" : {
+        "cursorPosition" : "2,22",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

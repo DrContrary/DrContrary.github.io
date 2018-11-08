@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1541694044148.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1720102916",
+    "id" : "6149D09E",
+    "lastKnownWriteTime" : 1541699869,
+    "last_content_update" : 1541699869122,
+    "path" : "C:/Users/Alyssa/R_users/R/build_one.R",
+    "project_path" : "R/build_one.R",
+    "properties" : {
+        "cursorPosition" : "30,2",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
