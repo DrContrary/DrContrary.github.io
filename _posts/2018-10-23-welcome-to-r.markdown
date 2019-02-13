@@ -1,5 +1,4 @@
 ---
-layout: post
 title:  "Welcome to R"
 date:   2018-10-23 12:37:39 -0400
 author: Alyssa
