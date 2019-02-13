@@ -12,16 +12,16 @@ knitr::opts_chunk$set(fig.path = "C:/Users/Alyssa/R_users/figure/")
 
 When you are just starting out, issues with getting to your data can get in the way of learning R. These might be the basics, but if you don't have these down you are going to run into issues quickly.  
 
-While there is nothing wrong with asking for help with these fundemental skills, it also doesn't hurt to have a good go-to reference when questions arise.
+While there is nothing wrong with asking for help with these fundamental skills, it also doesn't hurt to have a good go-to reference when questions arise.
 
 ## Directories  
 
 In computing, the directory is more an abstract concept. You can think of it as the system of organization used by your computer to store your files. More broadly, this is Where you store your files.  
-  
-You may be more familiar with the use of "folders", which are really just a visual representation of a directory. You can think of them them same way. 
+
+You may be more familiar with the use of "folders", which are really just a visual representation of a directory. You can think of them same way.
 
 **Working Directory**  
-This is the current "folder" that your computer is working in. It goes without saying that it is important to know where you are working in relation to the files you are working with. 
+This is the current "folder" that your computer is working in. It goes without saying that it is important to know where you are working in relation to the files you are working with.
 
 **Get your current directory**  
 ```{r eval = FALSE}
@@ -39,7 +39,7 @@ This command will set your working directory and takes the argument of the filep
 ```{r eval = FALSE}
 list.files()
 ```
-Leaving the arugments of this command blank will print the files currently in your working directory. For the full list of possible arugments, see the documentation <https://stat.ethz.ch/R-manual/R-devel/library/base/html/list.files.html> or use the command ?list.files within R to access the help file.
+Leaving the arguments of this command blank will print the files currently in your working directory. For the full list of possible arguments, see the documentation <https://stat.ethz.ch/R-manual/R-devel/library/base/html/list.files.html> or use the command ?list.files within R to access the help file.
 
 ## R Studio Directories  
 If you are working in R Studio, there are a few little GUI features that make beginners feel more comfortable. If you would like, you can use these options to set your working directory and view the contents in your file viewer.
@@ -49,10 +49,10 @@ If you are working in R Studio, there are a few little GUI features that make be
 
 ## Paths  
 
-The path referes to the series of nested directories in which your files lie. You can think of this as the directions to find your files within your computer.
+The path refers to the series of nested directories in which your files lie. You can think of this as the directions to find your files within your computer.
 
 **OS Specific Differences **  
-In linux based systems (including Macs) the filepath is written a bit diffrently than Windows. It is important to pay attention because this can cause your code to not run.
+In Linux based systems (including Macs) the filepath is written a bit differently than Windows. It is important to pay attention because this can cause your code to not run.
 
 **Windows**
 ```{r eval = FALSE}
@@ -64,13 +64,13 @@ path <- "\path\path\path\directory\file"
 path <- "/path/path/path/directory/file"
 ```
 
-The only difference as you might notice is the use of either a forward slash or back slash. If you work on a Linux machine, you won't need to change anything in your filepaths when working in R. However if you work on Windows machine, you will need to change your back slashes to forward slashes when specifying paths. 
+The only difference as you might notice is the use of either a forward slash or back slash. If you work on a Linux machine, you won't need to change anything in your filepaths when working in R. However if you work on Windows machine, you will need to change your back slashes to forward slashes when specifying paths.
 
 ## Files  
-While there are many diffrent methods to read in many types of files, I will only breifly go over a few methods here.
+While there are many different methods to read in many types of files, I will only briefly go over a few methods here.
 
 ### R Studio Text File Data Import Options
-If you are using R studio you have a couple build in GUI options for import. These are more familiar for people just starting out. Over time you will find there are more efficient ways to import your data that keep analysis as reproducable as possible.
+If you are using R studio you have a couple build in GUI options for import. These are more familiar for people just starting out. Over time you will find there are more efficient ways to import your data that keep analysis as reproducible as possible.
 
 ![](https://i.imgur.com/rIRkBwX.jpg?1)  
 
@@ -78,10 +78,10 @@ If you are using R studio you have a couple build in GUI options for import. The
 Clicking this option brings you to a fileviewer that allows you find your file of interest for import. Once a txt file has been selected a second menu opens which allows you to change some of the options for import. The name of the data will automatically populate with the file name, however this may be changed prior to import. Once you have made any adjustments, clicking import will load the data into your global environment.  
 
 **Import using readr Functions**  
-Of the two txt import options under this menu, I think using readr is the better option for several reasons. First, readr is part of the tidyverse and imports dataframes as tibbles. The user interface is also obviously better and you have moree control over the import. You can change the data class here as well simply by clicking the dropdown menu on the column name. Under this menu, you can also skip columns for import that aren't needed. Finally, part of the UI is a code preview. This gets you more familiar with importing data this way and can also be copied and pasted into your script.  
+Of the two txt import options under this menu, I think using readr is the better option for several reasons. First, readr is part of the tidyverse and imports dataframes as tibbles. The user interface is also obviously better and you have more control over the import. You can change the data class here as well simply by clicking the dropdown menu on the column name. Under this menu, you can also skip columns for import that aren't needed. Finally, part of the UI is a code preview. This gets you more familiar with importing data this way and can also be copied and pasted into your script.  
 
 ### R Studio Excel File Data Import Options
-In reality, Excel is a popular spreadsheet program and you will encounter lots of data as Excel files. You can also import this data using the R Studio UI by selecting the third option. 
+In reality, Excel is a popular spreadsheet program and you will encounter lots of data as Excel files. You can also import this data using the R Studio UI by selecting the third option.
 
 ![](https://i.imgur.com/oU23rZo.jpg)  
 
@@ -107,8 +107,8 @@ df = read.csv("file_name.csv")
 
 With this command we are reading in file_name.csv which is located in the current working directory and naming it df.
 
-**Import Text Files with Other Seperators**  
-If for example your data uses a . or # as a seperator you can import it using read.delim. All you have to do is define the seperator. In this example we will import a file that uses the .  
+**Import Text Files with Other Separators**  
+If for example your data uses a . or # as a separator you can import it using read.delim. All you have to do is define the separator. In this example we will import a file that uses the .  
 
 ```{r eval = FALSE}
 df = read.delim("file_name.txt", sep = ".")
@@ -121,4 +121,3 @@ The readr and read_excel functions we used in the UI import can also be coded di
 df = read_excel("file_name.xlsx")
 df = read_csv("file_name.csv")
 ```
-

@@ -1,5 +1,5 @@
 ---
-title: "Quantitative Image Analysis Data Vizualization"
+title: "Quantitative Image Analysis Data Visualization"
 author: "Alyssa"
 date: "November 14, 2018"
 
@@ -11,7 +11,7 @@ date: "November 14, 2018"
 
 # Plotting and Analysis of Quantitative Image Analysis Data  
 
-Last time we were working on some real data obtained from a quantitiative image analysis experiment. This time we will pick up where we left off and look at a few more metrics and explore some more plotting options.   
+Last time we were working on some real data obtained from a quantitative image analysis experiment. This time we will pick up where we left off and look at a few more metrics and explore some more plotting options.   
 
 **Goals**  
 
@@ -85,7 +85,7 @@ mean_stats_full
 {% endhighlight %}
 
 
-# Generate Boxplot in ggplot to Visually Detect Ouliers
+# Generate Boxplot in ggplot to Visually Detect Outliers
 
 The type of boxplot that we are talking about here is the box and whisker plot. If you recall from statistics each point on the box shows a specific data summary point. While the whiskers can be defined a number of ways, the default output in ggplot is Tukey's style we will focus only on this definition. This method define the points as such:  
 * lower hinge: 25th percentile (first quartile)    
@@ -114,7 +114,7 @@ ggplot(sytox_data_full,
 
 ![plot of chunk unnamed-chunk-4](/figure/unnamed-chunk-4-1.svg)
 
-For more information on the diffrent arguments you can use with the boxplot look here: <https://ggplot2.tidyverse.org/reference/geom_boxplot.html>  
+For more information on the different arguments you can use with the boxplot look here: <https://ggplot2.tidyverse.org/reference/geom_boxplot.html>  
 
 
 # Grubbs Test for Outliers
@@ -170,11 +170,11 @@ otest
 ## 5      24hr         +_Mye       3  121    23         144   15.9722222
 {% endhighlight %}
 
-If we look at the raw data, it becomes clear that an  error likely occured in the total cell counts since the DAPI numbers are signficantly lower than the other observations. As a result the total percentage of dead cells is much higher for this sample.  
+If we look at the raw data, it becomes clear that an  error likely occurred in the total cell counts since the DAPI numbers are significantly lower than the other observations. As a result the total percentage of dead cells is much higher for this sample.  
 
 # Boxplots With and Without Outliers Shown  
 
-You may have started to notice a pattern by now, that there are many ways to accomplish the same task in R. This is true as well for plotting multiple plots together. In a seperate tutorial it would be useful to go through the multiple packages and methods for doing so, but for now we will simply use the cowplot package. It has a number of features that really shine when it comes to creating multi-panel graphs like those you see in publications.  
+You may have started to notice a pattern by now, that there are many ways to accomplish the same task in R. This is true as well for plotting multiple plots together. In a separate tutorial it would be useful to go through the multiple packages and methods for doing so, but for now we will simply use the cowplot package. It has a number of features that really shine when it comes to creating multi-panel graphs like those you see in publications.  
 
 
 {% highlight r %}

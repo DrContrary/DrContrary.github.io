@@ -18,7 +18,7 @@ directly to biology, we will be using some data that I collected.
 
 **The Assay**
 
-In this assay cells are stained with flourescent dyes and then counted
+In this assay cells are stained with fluorescent dyes and then counted
 on the microscope automatically. The total number of cells per image is
 reported as either DAPI + (alive) or Sytox Green + (dead). This assay is
 used to evaluate cell death directly in a 96-well culture dish.
@@ -83,9 +83,9 @@ coerce this into a standard data.frame.
 To perform the manipulations we need, we need to load in the tidyr and
 dplyr packages that are part of the tidyverse. These will allow us to
 tidy up our data: remember that this means that each observation is in
-its own row with each varible in its own column. To get each variable in
-its own column, we will use the seperate() function to split the file
-name into the varibles we need.
+its own row with each variable in its own column. To get each variable in
+its own column, we will use the separate() function to split the file
+name into the variables we need.
 
 *Had I thought ahead when naming the files in the first place, I would
 have used better nomenclature. However, this is real data straight from
@@ -134,8 +134,8 @@ Here we create two new columns: "total\_cells" and "percent\_dead"
 Summary Function
 ----------------
 
-To get some summary information for plotting, let's use the summarise
-function that we previosly explored. Since we only have one time point
+To get some summary information for plotting, let's use the summarize
+function that we previously explored. Since we only have one time point
 and a single treatment, we will group by glucose concentration.
 
     mean_stats = sytox_data %>%
@@ -160,7 +160,7 @@ Use a bargraph to vizualize
 ---------------------------
 
 So, it looks like there is a huge effect from glucose. Lets plot this
-out to vizualize.
+out to visualize.
 
     ggplot(mean_stats, aes(x= glucose, y =  percent_dead_mean)) +
       geom_bar(stat = "identity") +
@@ -222,7 +222,7 @@ together.
 by treatment rather than glucose concentration as default. It is only
 for ease of viewing. Try removing the function to see what happens.
 
-Use a bargraph to vizualize the large set
+Use a bargraph to visualize the large set
 -----------------------------------------
 
     ggplot(mean_stats_full,

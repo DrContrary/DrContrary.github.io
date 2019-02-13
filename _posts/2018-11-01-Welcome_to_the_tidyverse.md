@@ -11,15 +11,15 @@ date: "October 31, 2018"
 
 Tidy data is data that exists in a controlled and structured format that allows for consistent manipulation. It is good practice to keep your data clean and tidy before working with it. As they say: garbage in, garbage out.
 
-If you want more information regarding what "tidy" data means you can read more about it here: <http://vita.had.co.nz/papers/tidy-data.html> 
+If you want more information regarding what "tidy" data means you can read more about it here: <http://vita.had.co.nz/papers/tidy-data.html>
 
 You can also reference the free book by Hadley Wickhman called "R for Data Science". The entire book is found here: <https://r4ds.had.co.nz/tidy-data.html>
 
 ## NYC Flights Data
 
-We will start by installing the NCY Flights Package that contains the data that we will need for this demo. 
+We will start by installing the NCY Flights Package that contains the data that we will need for this demo.
 
-This pacakge is a collection of datasets compiled by Hadley Wickham, author of many of the Tidyverse Packages we will look at. We will be using this dataset because it contains a variety of variables that will allow us to explore more funtions than a basic numerical table with integers and factors. If you want more information on this package you can load the help file in R or see <https://github.com/hadley/nycflights13>.
+This package is a collection of datasets compiled by Hadley Wickham, author of many of the Tidyverse Packages we will look at. We will be using this dataset because it contains a variety of variables that will allow us to explore more functions than a basic numerical table with integers and factors. If you want more information on this package you can load the help file in R or see <https://github.com/hadley/nycflights13>.
 
 
 ```
@@ -39,7 +39,7 @@ This pacakge is a collection of datasets compiled by Hadley Wickham, author of m
 ## x dplyr::lag()    masks stats::lag()
 ```
 
-While the nycflights13 package contains several seperate datasets, we will specifically be looking at "flights". Start by loading this data and exploring the strucutre.
+While the nycflights13 package contains several separate datasets, we will specifically be looking at "flights". Start by loading this data and exploring the structure.
 
 
 ```r
@@ -77,7 +77,7 @@ colnames(flights)
 
 ## Using dplyr for Data Manipulation on Columns
 
-dplyr is a package contained in the the Tidyverse and contains functions that you will need for performing a number of standard maniputations on data. This package was loaded with the tidyverse, so no need to load it seperately.
+dplyr is a package contained in the Tidyverse and contains functions that you will need for performing a number of standard manipulations on data. This package was loaded with the tidyverse, so no need to load it separately.
 
 **select** allows you to perform manipulations on columns.
 
@@ -85,7 +85,7 @@ Lets get rid of some columns we don't want using dplyr's select function. Only k
 
 
 ```r
-flight_names = select(flights, contains("time")) 
+flight_names = select(flights, contains("time"))
 head(flight_names)
 ```
 
@@ -149,7 +149,7 @@ colnames(flight_set)
 ## [1] "year"     "month"    "day"      "arr_time"
 ```
 
-The inverse of selecting specific columns is dropping them by name. This can be achieved by placing a - in front of the named column to be dropped. 
+The inverse of selecting specific columns is dropping them by name. This can be achieved by placing a - in front of the named column to be dropped.
 
 
 ```r
@@ -165,7 +165,7 @@ colnames(flight_minus)
 ## [17] "minute"         "time_hour"
 ```
 
-One of the powerful things about this function is that you can simply place a - in front of other commands that we already looked at to remove them by these criteria. 
+One of the powerful things about this function is that you can simply place a - in front of other commands that we already looked at to remove them by these criteria.
 
 
 ```r
@@ -193,7 +193,7 @@ Lets look at only flights from United Airlines (UA)
 ua_flights = filter(flights, carrier == "UA")
 ```
 
-If you have a group of variables that you would like to use for row selection we can do that as well. First we will assign a variable named "group" that contains our character strings of interest. Then we can select all the rows that match this by defining them as members in our group. 
+If you have a group of variables that you would like to use for row selection we can do that as well. First we will assign a variable named "group" that contains our character strings of interest. Then we can select all the rows that match this by defining them as members in our group.
 
 
 ```r
@@ -229,7 +229,7 @@ colnames(ua_minus_flights)
 ## [17] "hour"           "minute"         "time_hour"
 ```
 
-These functions thus far are powerful, fast, and commonly used. However, as scientits most of our data is numerical in nature. Thus we need to filter based on numerical criteria as well.
+These functions thus far are powerful, fast, and commonly used. However, as scientists most of our data is numerical in nature. Thus we need to filter based on numerical criteria as well.
 
 In this example months are reported as numbers between 1-12 so the numbers represent categorical variables. However these functions can be applied in other more biological situations such as:
 
@@ -237,7 +237,7 @@ In this example months are reported as numbers between 1-12 so the numbers repre
 * select data based on time
 * make selections above or below a set threshold
 
-To select just those flights from Febuary, use month ==2.
+To select just those flights from February, use month ==2.
 
 
 ```r
@@ -248,11 +248,11 @@ half_flight = filter (flights, month <= 6)
 
 ## The Pipe Operator
 
-Let't be real, code is for computers to read, not humans. To improve the readabilty of code and prevent complicated nested functions we use the pipe operator: %>% This technically comes from the magrittr package, but is loaded with the Tidyverse. When using the pipe operator functions are applied sequentially in a top down fashion. Meaning in the example below, select is applied before filter. While it doesn't make a difference in this example, order can be important depending on the situation.
+Let's be real.. code is for computers to read, not humans. To improve the readability of code and prevent complicated nested functions we use the pipe operator: %>% This technically comes from the magrittr package, but is loaded with the Tidyverse. When using the pipe operator functions are applied sequentially in a top down fashion. Meaning in the example below, select is applied before filter. While it doesn't make a difference in this example, order can be important depending on the situation.
 
 
 ```r
-flight_set = flights %>% 
+flight_set = flights %>%
   select(-dep_delay) %>%
   filter(month == 2)
 colnames(flight_set)
@@ -270,7 +270,7 @@ Now we just have everything except dep_delay in the month of febuary (2) as a ne
 
 ## Descriptive Statistics using Summary
 
-This is where a lot of the data everyone wants to access quicklly will come from. 
+This is where a lot of the data everyone wants to access quicklly will come from.
 
 As a side note for a later discussion, the tidyverse makes use of a data.frame structure called the tibble. Think of it as data.table 2.0 that has all the good stuff and a shiny new coat of paint. Our flights data and all the data in this example is in a tibble. One of the improvements on the standard data frame that is implemented in a tibble is that strings are not automatically converted to factors. While this might not mean much to you now, I promise this will not be the first time you deal with the complications regarding "strings as factors".
 
@@ -298,13 +298,13 @@ mean_dist
 ##    <fct>          <dbl>
 ##  1 9E              468.
 ##  2 AA             1350.
-##  3 AS             2402 
+##  3 AS             2402
 ##  4 B6             1057.
 ##  5 DL             1227.
 ##  6 EV              525.
-##  7 F9             1620 
-##  8 FL              691 
-##  9 HA             4983 
+##  7 F9             1620
+##  8 FL              691
+##  9 HA             4983
 ## 10 MQ              565.
 ## 11 UA             1436.
 ## 12 US              527.
@@ -315,14 +315,14 @@ mean_dist
 
 # Make a plot you would be proud to show at lab meeting
 
-Here we will make a few modifications so that we have the standard deviation as well as the mean. You are scientitsts, shame on you if you don't add error bars. 
+Here we will make a few modifications so that we have the standard deviation as well as the mean. You are scientists, shame on you if you don't add error bars. 
 
 
 
 ```r
 mean_dist = flight_set %>%
   group_by(carrier) %>%
-  summarise(distance_avg = mean(distance), sd = sd(distance)) 
+  summarise(distance_avg = mean(distance), sd = sd(distance))
 ```
 
 Without much additional explanation here, lets plot this out using ggplot2.
@@ -342,5 +342,3 @@ ggplot(mean_dist, aes(x= mean_dist$carrier, y =  mean_dist$distance_avg)) +
 ```
 
 ![plot of chunk unnamed-chunk-17](/figure/posts/2018-11-01-Welcome_to_the_tidyverse/unnamed-chunk-17-1.png)
-
-
