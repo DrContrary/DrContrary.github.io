@@ -8,3 +8,5 @@ layout: home
 <h1> R Users Group </h1>
 <p> Projects from Weekly Meetings <p>
 <br>
+
+<hr>

@@ -5,7 +5,7 @@ date: "October 31, 2018"
 
 ---
 
-
+----------------------------  
 
 ## Introduction to the Tidyverse
 
@@ -315,7 +315,7 @@ mean_dist
 
 # Make a plot you would be proud to show at lab meeting
 
-Here we will make a few modifications so that we have the standard deviation as well as the mean. You are scientists, shame on you if you don't add error bars. 
+Here we will make a few modifications so that we have the standard deviation as well as the mean. You are scientists, shame on you if you don't add error bars.
 
 
 

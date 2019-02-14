@@ -4,7 +4,7 @@ author: "Alyssa"
 date: "November 17, 2018"
 ---
 
-
+----------------------------
 
 When you are just starting out, issues with getting to your data can get in the way of learning R. These might be the basics, but if you don't have these down you are going to run into issues quickly.  
 
