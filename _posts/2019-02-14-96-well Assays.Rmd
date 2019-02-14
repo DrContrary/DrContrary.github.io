@@ -1,0 +1,213 @@
+---
+title: "96-well Plate Assays"
+author: "Alyssa Rolfe"
+date: "February 14, 2019"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(base.dir = "C:/Users/Alyssa/R_users/_posts", base.url = "/")
+knitr::opts_chunk$set(fig.path = "C:/Users/Alyssa/R_users/figure/")
+```
+
+
+## Multi-Well Plate Assays  
+
+The multi-well plate is utilized across many scientific fields. Not only does it allow for waste reduction (less reagents are used in a smaller well), but it is also compatible with a variety of screening assays. If you are running many such assays, you might even utilize a pipetting robot of some kind or other method to increase automation. In the spirit of increasing automation and reproducibility, we will use R to perform our analysis. In this example we are trying to determine the concentration of an unknown solute. To do this we generate a standard curve from which we can calculate the concentration of our uknown. 
+
+This data comes from a BCA assay which an assay designed to measure protein concentrations. If you are unfamiliar with the assay the general principle is that reagents are added to the sample such that a colorimetric reaction takes place. The absorbance of this reaction used to determine the protein concentration. To calculate the concentration of your unknowns (samples), you generate a standard curve of known protein concentrations at the same time. The relationship between absorbance and protein concentration should be linear, thus a simple line of best fit can be drawn to calculate the concentration your unknowns. If you are interested you can get more information about it here: <http://tools.thermofisher.com/content/sfs/manuals/MAN0011430_Pierce_BCA_Protein_Asy_UG.pdf>
+  
+## Libraries Used for this Project  
+
+```{r, warning=FALSE,message=FALSE}
+library(tidyverse)
+library(reshape2)
+library(Cairo)
+library(viridis)
+library(platetools)
+library(readxl)
+```
+
+## Data Structure  
+
+The data will come as an excel book with 3 individual sheets. The first sheet contains the raw data, the second contains the well identifiers, and the last sheet has the values of the standard curve.
+
+![](https://i.imgur.com/DcwamYA.jpg)  
+  
+
+
+## Define Assay Specific Variables First    
+
+For the purposes of good record keeping, there are several variables that need to be addressed before we proceed. First we need to name the file that we are looking at. This is critical and cannot be skipped. Then we add the units as the variable std_units. This is optional, but good practice to document. In this case we are looking at ug/mL. The assay_id and abs_nm are also somewhat optional, but similary should be included as a matter of good documentation.  
+
+Finally we create an output directory where we will save our analysis and graphs.
+
+```{r, warning=FALSE}
+file = "96_well_example.xls" # What file in your directory are you analyzing?
+
+std_units = "ug/mL"     # For Example: cell Number, ug, mg
+assay_id = "BCA_Assay"  # Any descriptive name is fine
+abs_nm = "510"          # What wavelength did you read at?
+
+dir.create("96-well_output") # save output files
+
+```
+
+## Now Perform the Analysis and Generate Outputs    
+First we need to import our data and do some minor manipulations. First we need to make sure that the columns are named appropriately and then we take our data from a standard wide plate layout to a long format that we can use in R.  
+
+
+### The first sheet contains the measurements
+```{r, warning=FALSE}
+readings = read_excel(file, sheet = 1) 
+head(readings)
+
+plate_cols = c("alpha", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
+colnames(readings) = plate_cols
+# melt the data to take it from wide to long
+readings = melt(data = readings, id.vars = "alpha", variable.name = "col_num" )
+readings = unite(readings, "well", c("alpha", "col_num"), sep = "")
+head(readings)
+```
+### The second sheet contains the plate layout  
+
+```{r, warning=FALSE}
+template = read_excel(file, sheet = 2)
+colnames(template) = plate_cols
+# melt the data to take it from wide to long
+template = melt(data = template, id.vars = "alpha", variable.name = "col_num", na.rm = TRUE) # na.rm is very important for downstream steps
+template = unite(template, "well", c("alpha", "col_num"), sep = "")
+# put the key and readings together
+# inner join is a filtering join -only matches in well present in both sets are kept
+plate = inner_join(template, readings, by = "well")
+names(plate) <- c("well", "sample", "abs")
+```
+
+### The last sheet contains the standard curve values 
+Whatever your curve is you should define it here. Just make sure that whatever you name your standards on here matches what you named them on the plate layout.  
+
+```{r}
+standards = read_excel(file, sheet = 3)
+head(standards)
+```
+
+### Calculate the mean absorbance of the samples 
+**Note** if you have named your standards with an identifier other than "Standard_X" you will need to adjust the code to make sure the filter is catching them. For simplicity, you should just try to keep all of your naming the same that way you don't have to change things.  
+
+```{r}
+mean_stats = plate %>%
+  group_by(sample) %>%
+  summarise(mean_abs = mean(abs), sd_abs = sd(abs))
+head(mean_stats)
+
+curve = mean_stats %>% 
+  dplyr::filter(str_detect(sample, "^Standard")) # include all the standard data
+curve = left_join(curve, standards, by = "sample")
+print(curve)
+
+```
+
+### Perform Linear Regression Analysis 
+Since we know that the relationship between the absorbance and protein concentration is linear we are able to use a linear regession model. This is done with lm() where the arugments are as follows: lm(formula = y ~ x, data = df).  
+
+Once the linear model has been fit, we extract some variables that will be used for calculating the concentration of our unknowns. If you remember your basic math, the equation for a line is y=mx+b. We extract our slope (m) as well as our x-intercept (b) and store them as variables.  
+
+We also extract our R squared value which gives us an idea of how well our data fits a linear model. The equation variable will be used to print the equation of our line on a graph we will generate later.  
+
+```{r}
+fit = lm(formula = std_con ~ mean_abs, data = curve)
+summary = summary(fit)
+summary
+
+m = coefficients(fit)[["mean_abs"]]
+b = coefficients(fit)[["(Intercept)"]]
+r_sqr = summary[["r.squared"]]
+equation = paste0("y=", round(m, 2), "x", "+", round(b, 2))
+```
+
+### Find the Unknown Concentrations  
+This is pretty standard and we are really just solving for x. To do this, we filter out all the standards this time and then use the mutate function to create a new variable called sample_con that is the calculated protein concentration.
+
+```{r}
+samples = mean_stats %>% 
+  filter(!str_detect(sample, "^Standard")) %>%   # remove all the standard data
+  dplyr::mutate(sample_con = (mean_abs * m + b ))
+
+# Also save your data for later
+# output the data table
+write.xlsx(samples, file = paste0(Sys.Date(),"_", assay_id, "_", "calculated_96_well_assay_output", ".xlsx"), sheetName = "Sheet1", 
+           col.names = TRUE, row.names = TRUE)
+```
+
+## Graph your Curve Along with the Data Points
+
+```{r}
+p = ggplot(curve, aes(x = mean_abs, y= std_con)) +
+  geom_point() +
+  geom_smooth(method  = lm)+
+  geom_point(data = samples, aes(x = mean_abs , y = sample_con, color = sample)) +
+  geom_text(data = samples,  mapping = aes(x = mean_abs , y = sample_con, label = round(sample_con, 2), color = sample, vjust=-2, hjust=0.5 )) +
+  theme_bw() +
+  labs(title = "96-well plate data",
+       subtitle = paste0(assay_id, " ", Sys.Date()),
+    tag = "Generated in R",
+    y = paste("Concentration", std_units ,sep = " "),
+    x = paste0("Mean Absorbance ", "(", abs_nm, ")" ), 
+    caption = paste0("y=", round(m, 2), "x", "+", round(b, 2), "    ", "R Squared: ", round(r_sqr, 4)) # print your equation and round the values to 2 digits
+  )
+p
+```
+## Use the Plate Tools Package to Visualize the Plate Data
+
+```{r}
+
+# Use plate map to generate extra columns
+readings_map = plate_map(data = readings$value,
+                 well = readings$well)
+readings_map = dplyr::right_join(plate, readings_map, by = "well") 
+
+# Genreate a ggplot variable for plotting
+plate_plot = raw_map(data = readings_map$abs,
+                     well = readings_map$well,
+                     plate = 96)
+plate_plot +
+  scale_fill_viridis() +
+  theme_bw() +
+  geom_text(mapping = aes(label = readings_map$sample), vjust=-4, size=1.5) +
+  labs(title = "96-well plate data (Mapped Samples)",
+       subtitle = paste0(assay_id, " ", Sys.Date()),
+       caption = paste0("Reading Wavelength: ", abs_nm, "nm")
+  )
+```
+
+## Finally we will Save out High Resolution PDFs of our Graphs
+```{r}
+#Save the plate map
+setwd("96-well_output")
+cairo_pdf(file= paste0(Sys.Date(),"_", assay_id, "_", "Heatplate_mapped", ".pdf"), 
+          width=8.46, 
+          height=4.7,
+          family = "Arial",
+          fallback_resolution = 300) 
+plate_plot +
+  scale_fill_viridis() +
+  theme_bw() +
+  geom_text(mapping = aes(label = readings_map$sample), vjust=-4, size=1.5) +
+  labs(title = "96-well plate data (Mapped Samples)",
+       subtitle = paste0(assay_id, " ", Sys.Date()),
+       caption = paste0("Reading Wavelength: ", abs_nm, "nm")
+  )
+dev.off()
+
+#Save the linear regression 
+cairo_pdf(file= paste0(Sys.Date(),"_", assay_id, ".pdf"), 
+          width=6, 
+          height=5,
+          family = "Arial",
+          fallback_resolution = 300) 
+p
+dev.off()
+
+```
+
+
