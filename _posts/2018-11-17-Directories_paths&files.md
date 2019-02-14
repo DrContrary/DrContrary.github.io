@@ -71,7 +71,7 @@ The only difference as you might notice is the use of either a forward slash or 
 While there are many different methods to read in many types of files, I will only briefly go over a few methods here.
 
 ### R Studio Text File Data Import Options
-If you are using R studio you have a couple build in GUI options for import. These are more familiar for people just starting out. Over time you will find there are more efficient ways to import your data that keep analysis as reproducable as possible.
+If you are using R studio you have a couple build in GUI options for import. These are more familiar for people just starting out. Over time you will find there are more efficient ways to import your data that keep analysis as reproduceable as possible.
 
 ![](https://i.imgur.com/rIRkBwX.jpg?1)  
 
