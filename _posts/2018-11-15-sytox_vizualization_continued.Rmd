@@ -15,7 +15,7 @@ knitr::opts_chunk$set(fig.path = "figure/")
 
 # Plotting and Analysis of Quantitative Image Anlysis Data  
 
-Last time we were working on some real data obtained from a quantitiative image analysis experiment. This time we will pick up where we left off and look at a few more metrics and explore some more plotting options.   
+Last time we were working on some real data obtained from a quantitative image analysis experiment. This time we will pick up where we left off and look at a few more metrics and explore some more plotting options.   
 
 **Goals**  
 
@@ -27,7 +27,7 @@ Last time we were working on some real data obtained from a quantitiative image 
 
 ##Import the Tidy Data  
 
-The original data set in this case was untidy and required a bit of work before we could do anything with it. To save some time and to prevent redundancy, I have provided a cleaned up version of the data for direct download. This data can be directly loaded in from my github repository using the RCurl package. 
+The original data set in this case was untidy and required a bit of work before we could do anything with it. To save some time and to prevent redundancy, I have provided a cleaned up version of the data for direct download. This data can be directly loaded in from my github repository using the RCurl package.
 
 ```{r,warning=FALSE,message=FALSE}
 library(dplyr)
@@ -37,7 +37,7 @@ library(ggplot2)
 
 ```{r}
 #read in the file from github
-urlBase <-'https://raw.githubusercontent.com/DrContrary/R4biology/master/Data%20Files/' 
+urlBase <-'https://raw.githubusercontent.com/DrContrary/R4biology/master/Data%20Files/'
 mkCon <- function(nm) { 	
   textConnection(getURL(paste(urlBase,nm,sep='/')))
 }
@@ -50,7 +50,7 @@ sytox_data_full$glucose = as.character(sytox_data_full$glucose)
 Now that we have the data, lets run our statistics again so that we have them for graphing. Remember the full dataset contains the full range of glucose treatments as well as treatment. Our summary statistics will include the mean percentage of dead cells as well as the standard deviation. For ease of reading, we also use the arrange function. In this case the function sorts our data by treatment.
 
 ```{r}
-#generate the table of statisitcs 
+#generate the table of statisitcs
 mean_stats_full = sytox_data_full %>%
   group_by(glucose, mye.treatment) %>%
   summarise(percent_dead_mean = mean(percent_dead), sd_percent = sd(percent_dead)) %>%
@@ -69,18 +69,18 @@ The type of boxplot that we are talking about here is the box and whisker plot. 
 * lower whisker: from lower hinge to smallest value or 1.5 X IQR (inter-quartile range)  
 
 **Outliers** are those points outside the end of the whiskers.   
-  
+
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/1a/Boxplot_vs_PDF.svg)
 
-  
+
 For more information you can reference the open source paper here (1978) <https://www.jstor.org/stable/2683468?origin=crossref&seq=1#page_scan_tab_contents>  
-    
+
 ## Using geom_boxplot  
 
 ```{r}
 #box plot to show data and outliers
-ggplot(sytox_data_full, 
+ggplot(sytox_data_full,
        aes(x= glucose, y = percent_dead, fill = mye.treatment)) +
   geom_boxplot()
 ```
@@ -88,7 +88,7 @@ ggplot(sytox_data_full,
 For more information on the diffrent arguments you can use with the boxplot look here: <https://ggplot2.tidyverse.org/reference/geom_boxplot.html>  
 
 
-# Grubbs Test for Outliers 
+# Grubbs Test for Outliers
 
 For illustration purposes only, the Grubbs Test will be used to determine if some of the outliers shown on the boxplot can be removed. I say illustration only because while it may be statistically sound to remove outliers from a dataset, I am of the belief that they should not be removed from biological data. However, in some fields such as chemistry the removal of outliers is common. Additionally, in the context of machine learning, the removal of outliers is often required for proper training.  
 
@@ -106,12 +106,12 @@ The function is defined as : grubbs.test(x, type = 10, opposite = FALSE, two.sid
 ```{r}
 otest = sytox_data_full %>%
   filter(glucose ==3) %>%
-  filter(mye.treatment == "+_Mye") 
+  filter(mye.treatment == "+_Mye")
 grubbs.test(otest$percent_dead)
 
 ```
 
-Based on the results, we can conclude that at 3.0g/L glucose with treatment there is one outlier present. Just looking at the boxplot, it is evident without testing that this point is well beyond the end of the whisker. 
+Based on the results, we can conclude that at 3.0g/L glucose with treatment there is one outlier present. Just looking at the boxplot, it is evident without testing that this point is well beyond the end of the whisker.
 
 ```{r}
 otest
@@ -131,7 +131,7 @@ library(cowplot)
 
 ```{r  fig.height = 8, fig.width = 12, fig.align = "center"}
 #box plot to show data and outliers
-nooutlier =ggplot(sytox_data_full, 
+nooutlier =ggplot(sytox_data_full,
        aes(x= glucose, y = percent_dead, fill = mye.treatment)) +
   geom_boxplot(outlier.shape = NA)+
   ylab("Percentage of Dead Cells") +
@@ -141,7 +141,7 @@ nooutlier =ggplot(sytox_data_full,
                     breaks=c("+_Mye", "No_Mye"),
                     labels=c("Treated", "Untreated"))+
   theme(legend.position="bottom")
-woutlier =ggplot(sytox_data_full, 
+woutlier =ggplot(sytox_data_full,
                   aes(x= glucose, y = percent_dead, fill = mye.treatment)) +
   geom_boxplot()+
   ylab("Percentage of Dead Cells") +
@@ -168,11 +168,11 @@ library(ggplot2)
 
 Because we are using two indivdual data sets (mean_stats_full and sytox_data_full) and plotting them on the same graph, we must set one as the defalt. Since our bars and error bars are from the same stats dataframe, we will use this as default and indicate this in the ggplot() argument.  
 
-To overlay the points on top, we must pull the data from the full sytox_data_full dataframe. To do so we specify the data for geom_point and provide the respective x and y values in the aes() arguments. 
+To overlay the points on top, we must pull the data from the full sytox_data_full dataframe. To do so we specify the data for geom_point and provide the respective x and y values in the aes() arguments.
 
 ```{r}
 #high impact journal formatting
-ggplot(mean_stats_full, 
+ggplot(mean_stats_full,
        aes(x= glucose, y = percent_dead_mean, fill = mye.treatment)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_point(data = sytox_data_full,
@@ -184,7 +184,7 @@ ggplot(mean_stats_full,
                 size=.3,    # Thinner lines
                 width=.2,
                 position = position_dodge(width = 0.9)) +
-  
+
   ylab("Percentage of Dead Cells") +
   xlab("Glucose Concentration (g/L)") +
   labs(title = "Barplot of Data using ggplot2") +
@@ -197,8 +197,4 @@ ggplot(mean_stats_full,
 
 **NOTE:** use "\n" to create a line break in a title  
 
-Order matters in the outcome of the final plot. If you plot the errorbar layer before the geom_point layer your points will cover the black lines of the errorbars. 
-
-
-
-
+Order matters in the outcome of the final plot. If you plot the errorbar layer before the geom_point layer your points will cover the black lines of the errorbars.

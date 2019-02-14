@@ -157,7 +157,7 @@ and a single treatment, we will group by glucose concentration.
     ## 8 4.0                 36.6       9.67
     ## 9 4.5                 44.4      28.9
 
-Use a bargraph to vizualize
+Use a bargraph to visualize
 ---------------------------
 
 So, it looks like there is a huge effect from glucose. Lets plot this
