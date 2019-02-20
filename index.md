@@ -5,8 +5,11 @@
 layout: home
 ---
 
+![Logo](https://i.imgur.com/vu8ZLMc.png){:height="40%" width="40%"}
+
 <h1> R Users Group </h1>
-<p> Projects from Weekly Meetings <p>
+<p> Selected Projects and Topics <p>
+
 <br>
 
 <hr>
