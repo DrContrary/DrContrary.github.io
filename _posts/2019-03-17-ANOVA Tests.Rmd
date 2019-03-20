@@ -1,0 +1,194 @@
+---
+title: "ANOVA Tests"
+author: "Alyssa Rolfe"
+date: "March 17, 2019"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(base.dir = "C:/Users/Alyssa/R_users/_posts", base.url = "/")
+knitr::opts_chunk$set(fig.path = "C:/Users/Alyssa/R_users/figure/")
+```
+
+
+The Analysis of Variance (ANOVA) is commonly seen in biological papers and has a lot of practical uses. Compared to the t-test that is used to compare the means of two groups, the ANOVA allows us to look at more 3 or more groups for comparison. You should be familiar with the fact that there is a one-way and two-way ANOVA. While they are similar, they are used to ask slightly different statistical questions. You can review these differences and the assumptions of the tests below.   
+
+## The One-Way ANOVA
+
+The one-way ANOVA looks at the effect of an independent variable on the dependent variable.
+
+**Assumptions: **  
+1. Normality: The data is normally distributed  
+2. Equal Variance: the variance between groups should be the same  
+3. Independent Samples  
+4. The dependent variable should be continuous  
+
+## The Two-Way ANOVA
+
+The two-way ANOVA looks at the effect of two independent variables on the dependent variable.
+
+**Assumptions: **  
+1. Normality: The data is normally distributed  
+2. Equal Variance: the variance between groups should be the same  
+3. Independent Samples  
+4. The dependent variable should be continuous  
+5. The independent variables are categorical and independent factors
+
+### Libraries Used for this Project  
+
+```{r, warning=FALSE,message=FALSE}
+library(tidyverse)
+library(car)
+library(stats)
+```
+
+### Generate Some Data
+
+Here we will generate a dummy experiment and some associated data for demonstration. Think of this as an experiment looking at rodent weights in response to diet. We also information about the sex of the animals in question. With this variety of data we can test hypotheses using either a one-way or two-way ANOVA depending on the particular experimental question.
+
+```{r}
+weight = round(rnorm(120, mean = 27 ),2) # rnorm will generate random normally distributed data
+sex = rep(c("M", "F"), 60)
+diet = rep(c("HF", "N", "LF"), 40)
+
+df = data.frame(weight, sex, diet)
+# normally tibbles are great, but in this case we do want our strings as factors so we will just go with the standard base R data.frame()
+head(df)
+```
+
+Look at the structure of the data to understand what we are working with.
+
+```{r}
+str(df)
+```
+
+We also want to make sure that this is a balanced experiment (ie equal number of observations for each categorical variable). We can do this with a contingency table which returns the counts for us.
+
+```{r}
+table(df$sex, df$diet)
+```
+
+
+### Visualize the Data  
+
+```{r}
+ggplot(data = df,
+       aes(x = diet, y = weight, fill = sex)) +
+  geom_boxplot()
+```
+
+### Check the Assumptions  
+
+**Assumptions: **  
+1. Normality: The data is normally distributed  
+2. Equal Variance: the variance between groups should be the same  
+3. Independent Samples  
+4. The dependent variable should be continuous
+
+**Normality: The data is normally distributed**
+
+Using the histogram you can look to see if the weight data (our dependent variable) is normally distributed. This should look like the classic bell curve distribution. It doesn't have to be perfect, but close is good.
+
+```{r}
+hist(df$weight)
+```
+
+These results were expected since we generated normal data. For comparison let's generate a non-normal set of data and run the same tests.
+
+```{r}
+weight_non_normal = round(runif(120, max = 35, min = 14),2)
+hist(weight_non_normal)
+```
+
+We can also use a Q-Q (quantile-quantile) Plot for visual inspection of normality. Much like the histogram, the Q-Q plot is a visual tool to get a general idea of the data. The actual plot generated is composed of the theoretical normal distribution quantiles (x-axis) and the sample quantiles (y-axis). If our data is normally distributed we should get something that looks approximately like a straight line.
+
+```{r fig.height = 5, fig.width = 8}
+par(mfrow=c(1,2))
+qqPlot(df$weight, main="Q-Q Plot Normal Data") # normal data
+qqPlot(weight_non_normal, main="Q-Q Plot Non-Normal Data") # non-normal data
+```
+
+We can also perform a true statistical test called the Shapiro-Wilk test. This tests if our data came from a normally distributed population. The hypotheses for this test are as follows:     
+
+H0: The sample came from a normally distributed population  
+H1: The sample came from a population that is not normally distributed  
+
+```{r}
+shapiro.test(df$weight) # normal data
+shapiro.test(weight_non_normal) # non-normal data
+```
+
+For the normal data we get a p-value > 0.05, and thus we cannot reject the null hypothesis that the data come from a normally distributed population. For the non-normal data we get a p-value < 0.05 which means we do reject the null hypothesis.   
+
+In practical interpretation terms:  
+* p-value > 0.05 = normal distribution  
+* p-value < 0.05 = non-normal distribution  
+
+**Equal Variance: the variance between groups should be the same**
+
+To test if our variance between groups is equal we will use the Bartlett's test. Another option is the Levene's test, and you might see this used as well. Both are acceptable but it should be noted that the Bartlett's test should not be used with non-normal data. Levene's test is not as sensitive to non-normality and can be used to examine non-parametric data.    
+
+```{r}
+bartlett.test(weight ~ interaction(sex, diet), data =df)
+leveneTest(weight ~ sex*diet, data = df)
+```
+
+For both of these tests you will notice that the p-values are different, however they are both > 0.05. This means that we can assume the variances are equal.  
+
+### Perform the One-Way ANOVA Test  
+
+For the one-way ANOVA our sample experimental question is: does diet effect rodent weight?  
+
+Hypotheses of our test are as follows:
+
+H0: The means of all the diets are equal  
+H1: The mean of at least one diet is different
+
+```{r}
+aov = aov(weight ~ diet, data = df) # perform the test
+summary(aov) # print the results
+print(model.tables(aov,"means"),digits=3) # print the summary of means table
+```
+
+Because the  p-value Pr(>F) is greater than the standard 0.05 threshold for significance, we fail to reject the null hypotheses above. More simply put...the mean weight of the animals is not different between the different diets.  
+
+### Perform the Two-Way ANOVA Test  
+
+If we want to look at the interaction between both of the independent variables (diet and sex) on weight we would need to use a two-way ANOVA. This is very similar in execution to the one-way ANOVA, but there are additional hypotheses that are being tested.  
+
+Hypotheses of our test are as follows:
+
+H0: The means of all the diets are equal  
+H1: The mean of at least one diet is different
+
+H0: The means of the sex groups are equal  
+H1: The means of the sex groups are different
+
+H0: There is no interaction between diet and sex  
+H1: There is an interaction between diet and sex
+
+
+```{r}
+aov2 = aov(weight ~ sex * diet, data = df)
+summary(aov2)
+```
+
+Because all p-values Pr(>F) are greater than the standard 0.05 threshold for significance, we fail to reject all three of the null hypotheses above.
+
+### Tukey's Post-Hoc Test  
+
+To look at the specific differences, we need to use a post-hoc test. To do this the Tukey's HSD (honestly significant difference) test is used. What it effectively does is perform a set of pairwise comparisons on the means. It should be noted that While the Tukey's test does have it's own set of assumptions, they are in line with the assumptions of the ANOVA. This means if the assumptions of the ANOVA were met, the Tukey's assumptions are met as well.  
+
+```{r}
+TukeyHSD(aov2)
+```
+
+As expected none of our pairwise comparisons were significant, because our ANOVA indicated that they were not initially significant. Despite our uninteresting results, this is the the general method you would use for a two-way ANOVA with a post-hoc test for pairwise comparisons.   
+
+As a final note, pay attention to the fact that the p-values for the Tukey's test are actually adjusted p-values. This is because the test controls for family-wise error rates. The more comparisons we make, the higher the probability that we will find false positives (type-I error). The Tukey's test takes into account the number of comparisons and attempts to minimize such type-I errors. This means it is effectively minimizing the probability that the researcher will find a comparison that is incorrectly significant. While small p-values are great, it is even more important to come to the most accurate conclusions.  
+
+![The Easiest Way to Remember the Difference in Error Types](https://i.imgur.com/UikGNPX.jpg)
+
+### Conclusions  
+
+While this is clearly not a deep statistical discussion of ANOVAs, this is enough information to at least get you started using R to perform this test and associated tests. In this case our data wasn't very interesting and it met all the test assumptions, but this isn't how things work in reality. In another post I will go into more detail about what to do when the assumptions of the ANOVA are not met.
